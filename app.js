@@ -1,4 +1,5 @@
 var bodyParser = require('body-parser'),
+methodOverride = require('method-override'),
 mongoose       = require('mongoose'),
 express        = require('express'),
 app            = express();
@@ -14,6 +15,7 @@ mongoose.connect('mongodb://localhost/restful_blog_app', {useNewUrlParser: true}
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public")); 
+app.use(methodOverride("_method"));
 
 
 //Mongoose/Model config
@@ -70,6 +72,40 @@ app.post("/blogs", function(req,res){
     })
 });
 
+//SHOW route
+app.get("/blogs/:id",function(req,res){
+    ///find blog
+    Blog.findById(req.params.id, function(err, foundBlog){
+        if(err){
+            res.redirect("/blogs");
+        } else {
+            res.render("show", {blog: foundBlog});
+        }
+    });
+});
+
+//EDIT route
+app.get("/blogs/:id/edit", function(req,res){
+    //look up blog by id
+    Blog.findById(req.params.id, function(err, foundBlog){
+        if(err){
+            res.redirect("/blogs");
+        } else {
+            res.render("edit", {blog: foundBlog});
+        }
+    });
+});
+
+//UPDATE route
+app.put("/blogs/:id",function(req,res){
+    Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, updatedBlogs){
+        if(err){
+            res.redirect("/blogs");
+        } else {
+            res.redirect("/blogs/" + req.params.id);
+        }
+    })
+})
 
 app.listen(3000, function(){
     console.log("Blog Server Started!");
