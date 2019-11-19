@@ -104,8 +104,22 @@ app.put("/blogs/:id",function(req,res){
         } else {
             res.redirect("/blogs/" + req.params.id);
         }
-    })
-})
+    });
+});
+
+//DESTROY route
+app.delete("/blogs/:id", function(req,res){
+    //destory blog
+    Blog.findByIdAndRemove(req.params.id, function(err){
+        //redirect
+        if(err){
+            res.redirect("/blogs");
+        } else {
+            res.redirect("/blogs");
+        }
+    });
+});
+
 
 app.listen(3000, function(){
     console.log("Blog Server Started!");
